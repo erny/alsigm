@@ -168,7 +168,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<keystore>${basedir}/../erevilla.object.signing.pfx</keystore>
+					<keystore>${basedir}/../object_signing.pfx</keystore>
 					<storetype>pkcs12</storetype>
 					<alias>codesign</alias>
 					<storepass>0987654321</storepass>
@@ -189,7 +189,6 @@
 			</plugin>
 
 		</plugins>
-
 
 	</build>
 	<profiles>
