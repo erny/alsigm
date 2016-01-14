@@ -10,6 +10,10 @@
 	<artifactId>fwktd-sendFiles-applet</artifactId>
 	<version>0.8</version>
 	<name>fwktd-sendFilesApplet</name>
+	<organization>
+		<name>MINETUR / Gobierno de España</name>
+		<url>http://administracionelectronica.gob.es/ctt/sigem</url>
+	</organization>
 
 	<dependencies>
 
@@ -22,7 +26,7 @@
 			<groupId>java</groupId>
 			<artifactId>java-plugin</artifactId>
 			<version>jre-1.4.2_14</version>
-			 <scope>provided</scope>
+			<scope>provided</scope>
 		</dependency>
 
 	</dependencies>
@@ -30,12 +34,12 @@
 	<build>
 		<plugins>
 			<plugin>
-        		<artifactId>maven-compiler-plugin</artifactId>
-        		<configuration>
-          			<source>1.5</source>
-          			<target>1.5</target>
-        		</configuration>
-      		</plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -69,9 +73,20 @@
 							</descriptorRefs>
 							<archive>
 								<manifest>
-              						<mainClass>es.ieci.tecdoc.fwktd.applets.sendfiles.applet.SendFilesApplet</mainClass>
-            					</manifest>
-          					</archive>
+									<mainClass>es.ieci.tecdoc.fwktd.applets.sendfiles.applet.SendFilesApplet</mainClass>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+								</manifest>
+								<manifestEntries>
+									<Application-Name>Applet envio archivos</Application-Name>
+									<Permissions>all-permissions</Permissions>
+									<Codebase>*</Codebase>
+									<Application-Library-Allowable-Codebase>*</Application-Library-Allowable-Codebase>
+									<Caller-Allowable-Codebase>*</Caller-Allowable-Codebase>
+									<Trusted-Library>true</Trusted-Library>
+									<Sealed>true</Sealed>
+								</manifestEntries>
+							</archive>
 							<finalName>${project.build.finalName}</finalName>
 							<appendAssemblyId>false</appendAssemblyId>
 						</configuration>
@@ -103,30 +118,41 @@
 				</configuration>
 			</plugin>
 
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.1</version>
-				<configuration>
-					<keystore>${basedir}/target/keystore</keystore>
-					<alias>scanApplet</alias>
-					<storepass>password</storepass>
-					<keypass>password</keypass>
-				</configuration>
+				<artifactId>maven-jarsigner-plugin</artifactId>
+				<version>1.4</version>
 				<executions>
 					<execution>
+						<id>sign</id>
 						<goals>
 							<goal>sign</goal>
-							<goal>sign-verify</goal>
+							<goal>verify</goal>
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<keystore>${basedir}/../erevilla.object.signing.pfx</keystore>
+					<storetype>pkcs12</storetype>
+					<alias>codesign</alias>
+					<storepass>0987654321</storepass>
+					<keypass>0987654321</keypass>
+					<excludes>
+						<exclude>**/images/*.*</exclude>
+						<exclude>custom-fo.xsl</exclude>
+					</excludes>
+					<arguments>
+						<argument>-digestalg</argument>
+						<argument>SHA-256</argument>
+						<argument>-tsa</argument>
+						<argument>http://tss.accv.es:8318/tsa</argument>
+					</arguments>
+					<verbose>true</verbose>
+					<certs>true</certs>
+				</configuration>
 			</plugin>
 
-
 		</plugins>
-
 
 	</build>
 <profiles>
@@ -254,11 +280,11 @@
 						</configuration>
 						<dependencies>
 							<dependency>
-							  <groupId>net.sf.docbook</groupId>
-							  <artifactId>docbook-xml</artifactId>
-							  <version>5.0-all</version>
-							  <type>zip</type>
-							  <classifier>resources</classifier>
+								<groupId>net.sf.docbook</groupId>
+								<artifactId>docbook-xml</artifactId>
+								<version>5.0-all</version>
+								<type>zip</type>
+								<classifier>resources</classifier>
 							</dependency>
 						</dependencies>
 					</plugin>

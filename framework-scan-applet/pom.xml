@@ -10,7 +10,7 @@
 	<artifactId>fwktd-scan-applet</artifactId>
 	<version>0.7</version>
 	<name>fwktd-scanApplet</name>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>com.sun.media</groupId>
@@ -37,17 +37,17 @@
 			<version>2.1.7</version>
 			<exclusions>
 				<exclusion>
-				  	<groupId>bouncycastle</groupId>
-  					<artifactId>bctsp-jdk14</artifactId>
-        		</exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bctsp-jdk14</artifactId>
+				</exclusion>
 				<exclusion>
-          			<groupId>bouncycastle</groupId>
+					<groupId>bouncycastle</groupId>
 					<artifactId>bcprov-jdk14</artifactId>
-        		</exclusion>
-        		<exclusion>
-          			<groupId>bouncycastle</groupId>
+				</exclusion>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
 					<artifactId>bcmail-jdk14</artifactId>
-        		</exclusion>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -109,9 +109,19 @@
 								<manifest>
 									<!--  Necesario para que no falle los Readers de JAI_IMAGEIO -->
 									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              						<mainClass>es.ieci.tecdoc.fwktd.applets.scan.applet.IdocFrame</mainClass>
-            					</manifest>
-          					</archive>
+									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+									<mainClass>es.ieci.tecdoc.fwktd.applets.scan.applet.IdocFrame</mainClass>
+								</manifest>
+								<manifestEntries>
+									<Application-Name>Applet de escáner</Application-Name>
+									<Permissions>all-permissions</Permissions>
+									<Codebase>*</Codebase>
+									<Application-Library-Allowable-Codebase>*</Application-Library-Allowable-Codebase>
+									<Caller-Allowable-Codebase>*</Caller-Allowable-Codebase>
+									<Trusted-Library>true</Trusted-Library>
+									<Sealed>true</Sealed>
+								</manifestEntries>
+							</archive>
 							<finalName>${project.build.finalName}</finalName>
 							<appendAssemblyId>false</appendAssemblyId>
 						</configuration>
@@ -146,28 +156,37 @@
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.1</version>
+				<artifactId>maven-jarsigner-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<id>sign</id>
+							<goals>
+								<goal>sign</goal>
+								<goal>verify</goal>
+							</goals>
+					</execution>
+				</executions>
 				<configuration>
-					<keystore>${basedir}/target/keystore</keystore>
-					<alias>scanApplet</alias>
-					<storepass>password</storepass>
-					<keypass>password</keypass>
+					<keystore>${basedir}/../erevilla.object.signing.pfx</keystore>
+					<storetype>pkcs12</storetype>
+					<alias>codesign</alias>
+					<storepass>0987654321</storepass>
+					<keypass>0987654321</keypass>
 					<excludes>
 						<exclude>**/images/*.*</exclude>
 						<exclude>custom-fo.xsl</exclude>
 					</excludes>
+					<arguments>
+						<argument>-digestalg</argument>
+						<argument>SHA-256</argument>
+						<argument>-tsa</argument>
+						<argument>http://tss.accv.es:8318/tsa</argument>
+					</arguments>
+					<verbose>true</verbose>
+					<certs>true</certs>
 				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>sign</goal>
-							<goal>sign-verify</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
-
 
 		</plugins>
 
@@ -299,11 +318,11 @@
 						</configuration>
 						<dependencies>
 							<dependency>
-							  <groupId>net.sf.docbook</groupId>
-							  <artifactId>docbook-xml</artifactId>
-							  <version>5.0-all</version>
-							  <type>zip</type>
-							  <classifier>resources</classifier>
+								<groupId>net.sf.docbook</groupId>
+								<artifactId>docbook-xml</artifactId>
+								<version>5.0-all</version>
+								<type>zip</type>
+								<classifier>resources</classifier>
 							</dependency>
 						</dependencies>
 					</plugin>
@@ -341,7 +360,6 @@
 									</descriptors>
 								</configuration>
 							</execution>
-
 						</executions>
 					</plugin>
 				</plugins>
